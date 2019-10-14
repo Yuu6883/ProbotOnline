@@ -1,0 +1,32 @@
+{
+  "name": "probotonline",
+  "version": "1.0.0",
+  "description": "Gateway/online site for https://probotplayground.com bot",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yuu6883/ProbotOnline.git"
+  },
+  "author": "Yuu6883",
+  "license": "MIT",
+  "dependencies": {
+    "@clusterws/cws": "^0.15.2",
+    "btoa": "^1.2.1",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "fb": "^2.0.0",
+    "mongoose": "^5.7.1",
+    "node-fetch": "^2.6.0",
+    "uid-safe": "^2.1.5"
+  },
+  "bugs": {
+    "url": "https://github.com/Yuu6883/ProbotOnline/issues"
+  },
+  "homepage": "https://github.com/Yuu6883/ProbotOnline#readme"
+}
