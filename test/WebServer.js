@@ -1,11 +1,19 @@
 const express = require("express");
-let APIServer = require("../src/servers/api");
+const http = require("http");
+const APIServer = require("../src/servers/api");
+const BotServer = require("../src/servers/bot/app");
+
+const app = express()
+    .use("/", express.static(__dirname + "/../web"))
+    .use("/api", APIServer.router);
+
+const server = http.createServer(app);
 
 APIServer.init().then(() => {
-    express()
-    .use("/", express.static(__dirname + "/../web"))
-    .use("/api", APIServer.router)
-    .listen(80, () => {
-        APIServer.logger.info(`Server open`)
+    BotServer.init(server);
+
+    server.listen(80, () => {
+        APIServer.logger.info(`Web server open`);
+        BotServer.init(APIServer.webserver);
     });
 });
