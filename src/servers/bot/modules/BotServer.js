@@ -1,30 +1,33 @@
 const { WebSocketServer } = require("@clusterws/cws");
-const Config = require("../../../../config").WS;
-const Logger = require("./Logger");
+const Cookie = require("cookie");
 
 module.exports = class BotServer {
 
-    constructor() {
-        this.config = Config;
-        this.logger = new Logger();
-
+    /**
+     * @param {APIServer} api
+     */
+    constructor(api) {
+        this.api = api;
         /** @type {WebSocket[]} */
         this.connections = [];
     }
+
+    get config() { return this.api.config }
+    get logger() { return this.api.logger }
 
     /** @param {import("http").Server} server */
     init(server) {
         if (server) {
             this.server = new WebSocketServer({
                 server,
-                path: "/u/",
-                // verifyClient: this.verifyClient.bind(this)
+                path: "/connect/",
+                verifyClient: this.verifyClient.bind(this)
             }, () => {
                 this.logger.info("Bot websocket server open");
             });
         } else {
             this.server = new WebSocketServer({
-                port: this.config.port,
+                port: this.config.WS.port,
                 // verifyClient: this.verifyClient.bind(this)
             }, () => {
                 this.logger.info("Bot websocket server open");
@@ -40,14 +43,32 @@ module.exports = class BotServer {
      * @param {import("@clusterws/cws").Listener} next 
      */
     verifyClient(info, next) {
-        console.log(info.req.headers.cookie);
-        next();
+
+        return next(true);
+
+        let cookie = Cookie.parse(info.req.headers.cookie);
+        let token  = cookie[this.config.API.CookieName];
+
+        if (this.api.users.confirmToken(token)) {
+            this.api.users.findByAuthedToken(token).then(userDoc => {
+                if (!userDoc) {
+                    this.logger.info(`User NOT verified before connection`);
+                    next(false);
+                } else {
+                    info.req.user = userDoc.toObject();
+                    this.logger.info(`User verified before connection: ${userDoc.UserID}`);
+                    next(true);
+                }
+            });
+        } else {
+            next(false);
+        }
     }
 
     initEvents() {
         this.server.on("connection", (socket, req) => {
 
-            console.log(req);
+            let user = req.user;
 
             this.connections.push(socket);
 

@@ -10,10 +10,12 @@ const app = express()
 const server = http.createServer(app);
 
 APIServer.init().then(() => {
-    BotServer.init(server);
+
+    let botServer = new BotServer(APIServer);
+    botServer.init(server);
 
     server.listen(80, () => {
         APIServer.logger.info(`Web server open`);
-        BotServer.init(APIServer.webserver);
+        botServer.init(APIServer.webserver);
     });
 });

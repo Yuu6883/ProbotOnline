@@ -1,6 +1,7 @@
 interface Config {
     API:  APIConfig;
     Auth: AuthConfig;
+    WS:   WSConfig;
 }
 
 interface APIConfig {
@@ -22,6 +23,10 @@ interface AuthConfig {
     Discord:     AuthEntry;
     Facebook:    AuthEntry;
     Google:      AuthEntry;
+}
+
+interface WSConfig {
+    port:  number;
 }
 
 interface AuthEntry {
