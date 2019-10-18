@@ -13,7 +13,7 @@ module.exports = class GatewayServer {
         this.router = Router();
         this.router.use(BodyParser.urlencoded({ extended: true }));
         this.router.use(BodyParser.json());
-        this.router.use("/:userID/bet", this.onBet.bind(this));
+        this.router.post("/:userID/bet", this.onBet.bind(this));
     }
 
     /**
