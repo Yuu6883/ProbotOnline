@@ -51,7 +51,7 @@ module.exports = class BotConnection {
 
         this.sendLog(leave ? "Leaving game" : `Betting ${bet}`);
 
-        this.handle && this.handle.res.send({ bet, leave });
+        this.handle && this.handle.res.json({ bet, leave });
     }
 
     get username() {

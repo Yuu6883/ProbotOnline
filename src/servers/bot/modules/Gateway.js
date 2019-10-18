@@ -11,9 +11,9 @@ module.exports = class GatewayServer {
 
     initRouter() {
         this.router = Router();
-        this.router.use(BodyParser.urlencoded({ extended: true }));
+        this.router.use(BodyParser.urlencoded({ extended: false }));
         this.router.use(BodyParser.json());
-        this.router.post("/:userID/bet", this.onBet.bind(this));
+        this.router.post("/:userID", this.onBet.bind(this));
         this.router.use((_, res) => res.sendStatus(200));
     }
 
