@@ -63,6 +63,7 @@ module.exports = {
         }
 
         userInfo.type = "google";
+        userInfo.uid = user.UserID;
 
         res.cookie(this.config.API.JWTCookieName, 
             JWT.sign(userInfo, this.config.API.JWTSecret), { maxAge: this.config.API.CookieAge });

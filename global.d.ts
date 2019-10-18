@@ -29,7 +29,9 @@ interface AuthConfig {
 }
 
 interface WSConfig {
-    port:  number;
+    port:       number;
+    timeout:    number;
+    betTimeout: number;
 }
 
 interface AuthEntry {
@@ -97,6 +99,7 @@ interface FacebookAuthorization {
 }
 
 interface FacebookUser {
+    uid:  string;
     id:   string;
     name: string;
 }
@@ -106,6 +109,7 @@ interface FacebookError {
 }
 
 interface DiscordUser {
+    uid:           string;
     id:            string;
     username:      string;
     discriminator: string;
@@ -114,6 +118,7 @@ interface DiscordUser {
 }
 
 interface GoogleUser {
+    uid:         string;
     id:          string;
     family_name: string;
     given_name:  string;

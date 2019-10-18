@@ -2,8 +2,9 @@ const fs = require("fs");
 const configPath = __dirname + "/log-config.json";
 
 let DefaultSettings = {
-    timeout: 20000,
-    port:    4000
+    port:       4000,
+    timeout:    20000,
+    betTimeout: 4800,
 };
 
 if (!fs.existsSync(configPath)) {

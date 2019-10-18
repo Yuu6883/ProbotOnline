@@ -2,6 +2,8 @@ const { WebSocketServer } = require("@clusterws/cws");
 const Cookie = require("cookie");
 const JWT = require("jsonwebtoken");
 
+const BotConnection = require("./BotConnection");
+
 module.exports = class BotServer {
 
     /**
@@ -9,7 +11,7 @@ module.exports = class BotServer {
      */
     constructor(api) {
         this.api = api;
-        /** @type {WebSocket[]} */
+        /** @type {import("./BotConnection")[]} */
         this.connections = [];
     }
 
@@ -29,7 +31,7 @@ module.exports = class BotServer {
         } else {
             this.server = new WebSocketServer({
                 port: this.config.WS.port,
-                // verifyClient: this.verifyClient.bind(this)
+                verifyClient: this.verifyClient.bind(this)
             }, () => {
                 this.logger.info("Bot websocket server open");
             });
@@ -61,21 +63,51 @@ module.exports = class BotServer {
     initEvents() {
         this.server.on("connection", (socket, req) => {
 
-            let user = req.user;
-            console.log(user);
-            
-            this.connections.push(socket);
+            /** @type {ClientUser} */
+            let user = req.user;            
+            let conn = new BotConnection(this, user, socket);
+            this.connections.push(conn)
 
-            this.logger.info(`Client connected from ${socket.remoteAddress}. ` + 
-                             `Total connection: ${this.connections.length}`);
+            this.logger.info(`Client connected from ${socket.remoteAddress}(${this.connections.length}). ` +
+                             `User: ${conn.username}(${user.uid})`);
 
             socket.on("close", (code, reason) => {
 
-                this.logger.info(`Client disconnected. ` + 
-                                 `Total connection: ${this.connections.length}`);
+                this.connections.splice(this.connections.indexOf(conn), 1);
 
+                this.logger.info(`${conn.username} disconnected (${this.connections.length})`);
                 this.logger.debug(`Close code: ${code}, reason: ${reason}`);
             });
         });
+    }
+
+    /** @param {string} userID */
+    findConnection(userID) {
+        return this.connections.find(conn => conn.user.uid == userID);
+    }
+
+    /**
+     * @param {string} userID 
+     * @param {import("express").Request} req
+     * @param {import("express").Response} res
+     */
+    setHandle(userID, req, res) {
+        let conn = this.findConnection(userID);
+
+        if (!conn) {
+            return res.sendStatus(404);
+        } else {
+            conn.handle = { req, res };
+            conn.sendBody(req.body);
+
+            // Rip
+            setTimeout(() => {
+                if (!res.headersSent) {
+                    // Timeout code
+                    res.sendStatus(408);
+                    conn.informTimeout();
+                }
+            }, this.config.WS.betTimeout);
+        }
     }
 }
