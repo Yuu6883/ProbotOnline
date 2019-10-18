@@ -5,6 +5,10 @@ const BotServer = require("../src/servers/bot/app");
 const GatewayServer = require("../src/servers/bot/modules/Gateway");
 
 const app = express()
+    .use("/", (req, _, next) => {
+        APIServer.logger.info(req.originalUrl);
+        next();
+    })
     .use("/", express.static(__dirname + "/../web"))
     .use("/api", APIServer.router);
 
