@@ -1,3 +1,5 @@
+const JWT = require("jsonwebtoken");
+
 const mapToJson = map => [...map.entries()].reduce((prev, curr) => (prev[curr[0]] = curr[1], prev), {});
 const jsonToMap = obj => new Map(Object.entries(obj));
 
@@ -62,6 +64,9 @@ module.exports = {
 
         userInfo.type = "discord";
 
+        res.cookie(this.config.API.JWTCookieName, 
+            JWT.sign(userInfo, this.config.API.JWTSecret), { maxAge: this.config.API.CookieAge });
+            
         res.cookie(cookieName, token, { maxAge: this.config.API.CookieAge });
         res.json(userInfo);
 

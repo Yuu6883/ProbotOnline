@@ -11,6 +11,9 @@ interface APIConfig {
     InfoCache:     number;
     UserIDLength:  number;
     CookieName:    string;
+    JWTCookieName: string;
+    JWTSecret:     string;
+    JWTExpire:     string;
     CookieLength:  number;
     CookieAge:     number;
     Port:          number;

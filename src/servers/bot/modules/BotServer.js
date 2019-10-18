@@ -1,5 +1,6 @@
 const { WebSocketServer } = require("@clusterws/cws");
 const Cookie = require("cookie");
+const JWT = require("jsonwebtoken");
 
 module.exports = class BotServer {
 
@@ -44,23 +45,15 @@ module.exports = class BotServer {
      */
     verifyClient(info, next) {
 
-        return next(true);
-
         let cookie = Cookie.parse(info.req.headers.cookie);
-        let token  = cookie[this.config.API.CookieName];
+        let jwt  = cookie[this.config.API.JWTCookieName];
 
-        if (this.api.users.confirmToken(token)) {
-            this.api.users.findByAuthedToken(token).then(userDoc => {
-                if (!userDoc) {
-                    this.logger.info(`User NOT verified before connection`);
-                    next(false);
-                } else {
-                    info.req.user = userDoc.toObject();
-                    this.logger.info(`User verified before connection: ${userDoc.UserID}`);
-                    next(true);
-                }
-            });
-        } else {
+        try  {
+            JWT.verify(jwt, this.config.API.JWTSecret);
+            info.req.user = JWT.decode(jwt);
+
+            next(true);
+        } catch (_) {
             next(false);
         }
     }
@@ -69,7 +62,8 @@ module.exports = class BotServer {
         this.server.on("connection", (socket, req) => {
 
             let user = req.user;
-
+            console.log(user);
+            
             this.connections.push(socket);
 
             this.logger.info(`Client connected from ${socket.remoteAddress}. ` + 

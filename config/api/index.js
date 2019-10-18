@@ -6,7 +6,9 @@ let DefaultAPIConfig = {
     DBName: "default-database",
     AllowedOrigin: null,
     CookieName: "default-cookie",
-    CookieLength: 128,
+    JWTCookieName: "default-jwt-cookie",
+    JWTExpire: "1h",
+    JWTSecret: "blablabla",
     UserIDLength: 12,
     InfoCache: 60 * 60 * 1000, // 1 hour
     CookieAge: 10 * 24 * 60 * 60 * 1000, // 10 days
