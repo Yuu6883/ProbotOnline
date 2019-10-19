@@ -54,9 +54,9 @@ module.exports = new class HUD {
                 if (typeof arg === "object") {
                     if (arg.message && arg.stack) {
                         consoleElem.append(arg.message);
-                    } else consoleElem.append(inspect(arg, false, 2, false));
+                    } else consoleElem.append(escapeHTML(inspect(arg, false, 2, false)));
                 } else {
-                    consoleElem.append(String(arg));
+                    consoleElem.append(escapeHTML(String(arg)));
                 }
             }
             consoleElem.append("<br>");
@@ -128,6 +128,14 @@ module.exports = new class HUD {
         $("#user-pfp").attr("src", API.avatarURL);
     }
 }
+/** @param {string} html */
+const escapeHTML = html => {
+    return html.replace(/&/g,'&amp;')
+               .replace(/</g,'&lt;')
+               .replace(/>/g,'&gt;')
+               .replace(/ /g, "&nbsp;")
+               .replace(/\n/g, "<br>");
+}
 
 const StarterCode = "" +
 `/* getState and getHistory is provided */
@@ -136,7 +144,7 @@ const history = getHistory();
 
 /* console.log, console.warn, console.error will
    write to Console panel on the right */
-console.log("Game State: ", state);
+console.log("Game State: \n", JSON.stringify(state, null, 4));
 console.warn(\`History Length: \${history.length}\`);
 
 const players = state.players;

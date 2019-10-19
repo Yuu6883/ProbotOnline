@@ -82,8 +82,8 @@ a.uk-button:hover {
     border-width: 0px;
     background-color: black;
     padding: 3px 10px;
-    line-height: 97%;
     -webkit-user-select: text;
+    overflow-y: scroll;
 }
 
 #copy {
