@@ -1742,7 +1742,8 @@ const history = getHistory();
 
 /* console.log, console.warn, console.error will
    write to Console panel on the right */
-console.log("Game State: \n", JSON.stringify(state, null, 4));
+// Uncomment to print a long JSON every round 
+// console.log("Game State: \\n", JSON.stringify(state, null, 4));
 console.warn(\`History Length: \${history.length}\`);
 
 const players = state.players;
@@ -1765,11 +1766,11 @@ totalRank += rankToNumber(myCards[1].rank);
 /* mra for Minium Raise Amount */
 let mra = state.minimumRaiseAmount;
 
-if (rank >= 24 && me.chips >= mra * 2)
+if (totalRank >= 24 && me.chips >= mra * 2)
     myBet = mra * 2;
-  else if (rank >= 20 && me.chips >= mra * 1.5)
+  else if (totalRank >= 20 && me.chips >= mra * 1.5)
     myBet = mra * 1.5;
-  else if (rank >= 16 && me.chips >= mra)
+  else if (totalRank >= 16 && me.chips >= mra)
     myBet = mra;
     
 /* Set bet amount to negative to leave */
@@ -1784,6 +1785,65 @@ console.log(myBet > 0 ?
     
 /* call function bet to send data back to server */
 bet(myBet);
+
+/* Below is a sample game state object, history is an array of game state */
+{
+    "game":1, // game number of the table
+    "hand":1, // hand number of the table
+    "spinCount":0, // ??
+    "sb":1,   // small blind amount
+    "pot":26, /* total amout bet for current hand, 
+                 amount you could potentially win that hand */
+    "sidepots":[
+        // Side pots
+    ],
+    "buyin":250, /* players buyin for the table 
+                   (can be diffirent per player) */
+    "commonCards":[
+        /* the cards on the table accessable to all players */
+    ],
+    "db":0, // indicates if that player has the dealer button
+    "callAmount":6, /* Minimum amount needed to keep playing the hand */
+    "minimumRaiseAmount":12, /* Explained with name */
+    "players":[
+       {
+          "name":"hello there",
+          "status":"active", // or "folded"
+          "chips":242,
+          "chipsBet":8
+       },
+       {
+          "name":"dummy bot",
+          "status":"active",
+          "chips":242,
+          "chipsBet":8
+       },
+       {
+          "name":"spar with me",
+          "status":"active",
+          "chips":248,
+          "chipsBet":2,
+          "cards":[ // Cards are only visible to the player 
+             {
+                "rank":"2",
+                "type":"S" /* "S" for Spades, "H" for Heart, 
+                              "C" for Club, "D" for Diamond */
+             },
+             {
+                "rank":"J",
+                "type":"D"
+             }
+          ]
+       },
+       {
+          "name":"Hello my bot",
+          "status":"active",
+          "chips":242,
+          "chipsBet":8
+       }
+    ],
+    "me":2 // Index in players thats "me"
+}
 `;
 },{"./api":7,"util":5}],9:[function(require,module,exports){
 const API = require("./api");
