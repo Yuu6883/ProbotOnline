@@ -3,6 +3,8 @@ const { EventEmitter } = require("events");
 const BET_OP_CODE  = 1;
 const LOG_OP_CODE  = 2;
 const DATA_OP_CODE = 3;
+const PING_OP_CODE = 4;
+const PONG_OP_CODE = 5;
 const LATE_OP_CODE    = 253;
 const TIMEOUT_OP_CODE = 254;
 const NO_GAME_OP_CODE = 255;
@@ -15,6 +17,8 @@ module.exports = class BotSocket extends EventEmitter {
         /** @type {WebSocket} */
         this.socket = null;
         this.history = [];
+
+        this.pingInterval = setInterval(() => this.ping(), 5000);
     }
 
     /** @param {string} url */
@@ -78,6 +82,9 @@ module.exports = class BotSocket extends EventEmitter {
                     this.emit("data");
                     console.debug("Received Game State:", data);
                     break;
+                
+                case PONG_OP_CODE:
+                    break;
 
                 default: 
                     console.error(`Unknown event from server: ${view.getUint8(0)}`);
@@ -107,6 +114,13 @@ module.exports = class BotSocket extends EventEmitter {
 
     send(data) {
         this.connected && this.socket.send(data);
+    }
+
+    ping() {
+        let buffer = new ArrayBuffer(1);
+        let view = new DataView(buffer);
+        view.setUint8(0, PING_OP_CODE);
+        this.send(buffer);
     }
 
     /**

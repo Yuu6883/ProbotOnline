@@ -1,6 +1,8 @@
 const BET_OP_CODE  = 1;
 const LOG_OP_CODE  = 2;
 const DATA_OP_CODE = 3;
+const PING_OP_CODE = 4;
+const PONG_OP_CODE = 5;
 const LATE_OP_CODE    = 253;
 const TIMEOUT_OP_CODE = 254;
 const NO_GAME_OP_CODE = 255;
@@ -29,8 +31,16 @@ module.exports = class BotConnection {
             
             if (view.getUint8(0) == BET_OP_CODE) {
                 this.onBet(view.getUint32(1));
+            } else if (view.getUint8(0) == PING_OP_CODE) {
+                this.onPing();
             }
         });
+    }
+
+    onPing() {
+        let view = new DataView(new ArrayBuffer(1));
+        view.setUint8(0, PONG_OP_CODE);
+        this.send(view);
     }
 
     /** @param {number} bet */
