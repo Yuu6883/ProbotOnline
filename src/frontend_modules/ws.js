@@ -71,7 +71,7 @@ module.exports = class BotSocket extends EventEmitter {
                     break;
 
                 case NO_GAME_OP_CODE:
-                    console.error("Your bot is not in any game");
+                    console.error("Your bot is NOT connected to game server");
                     break;
 
                 case DATA_OP_CODE:

@@ -1787,7 +1787,7 @@ console.log(myBet > 0 ?
 bet(myBet);
 
 /* Below is a sample game state object, history is an array of game state */
-{
+const sample = {
     "game":1, // game number of the table
     "hand":1, // hand number of the table
     "spinCount":0, // ??
@@ -1993,7 +1993,7 @@ module.exports = class BotSocket extends EventEmitter {
                     break;
 
                 case NO_GAME_OP_CODE:
-                    console.error("Your bot is not in any game");
+                    console.error("Your bot is NOT connected to game server");
                     break;
 
                 case DATA_OP_CODE:

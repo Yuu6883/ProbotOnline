@@ -189,7 +189,7 @@ console.log(myBet > 0 ?
 bet(myBet);
 
 /* Below is a sample game state object, history is an array of game state */
-{
+const sample = {
     "game":1, // game number of the table
     "hand":1, // hand number of the table
     "spinCount":0, // ??
