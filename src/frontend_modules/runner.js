@@ -24,19 +24,17 @@ module.exports = class Runner {
      */
     static run(socket, script) {
 
-        if (!this.context) {
-            this.context = VM.createContext({
-                bet: socket.sendBet.bind(socket),
-                getState: () => socket.data,
-                getHistory: () => socket.history,
-                rankToNumber, cardsToString,
-                console: console
-            }, {
-                timeout: 5000,
-                filename: "probot.js"
-            });
-        }
+        let context = VM.createContext({
+            bet: socket.sendBet.bind(socket),
+            getState: () => socket.data,
+            getHistory: () => socket.history,
+            rankToNumber, cardsToString,
+            console: console
+        }, {
+            timeout: 5000,
+            filename: "probot.js"
+        });
 
-        VM.runInNewContext(script, this.context);
+        VM.runInNewContext(script, context);
     }
 }
