@@ -1658,6 +1658,10 @@ module.exports = new class HUD {
                 }
             }
             consoleElem.append("<br>");
+
+            while (consoleElem.children.length > 200) {
+                consoleElem.children().eq(0).remove();
+            }
         };
 
         const b = t => `<strong>[<span class="${t}">${t.toUpperCase()}</span>]</strong> `;
@@ -1685,6 +1689,7 @@ module.exports = new class HUD {
         console.log   = this.console.log;
         console.warn  = this.console.warn;
         console.error = this.console.error;
+        console.clear = this.console.clear;
     }
 
     copyToClipboard(element) {
@@ -1775,9 +1780,9 @@ if (totalRank >= 24 && me.chips >= mra * 2)
     
 /* Set bet amount to negative to leave */
 if (me.chips >= me.buyIn * 1.5) 
-    bet = -1;
+    myBet = -1;
 else if (me.chips <= me.buyIn * 0.5)
-    bet = -1;
+    myBet = -1;
     
 /* Log the result */
 console.log(myBet > 0 ? 
