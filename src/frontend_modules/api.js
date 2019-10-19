@@ -24,7 +24,8 @@ module.exports = new class API extends EventEmitter {
 
     clearLogin() {
         delete localStorage.platform;
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 3000);
+        console.log("Refreshing page in 3 seconds");
     }
 
     /** @param {OAuth2Type} platform */

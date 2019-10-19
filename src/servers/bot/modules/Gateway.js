@@ -6,7 +6,7 @@ module.exports = class GatewayServer {
     /** @param {import("./BotServer")} bot */
     constructor(bot) {
         this.bot = bot;
-        this.initRouter()
+        this.initRouter();
     }
 
     initRouter() {
@@ -22,7 +22,10 @@ module.exports = class GatewayServer {
      * @param {import("express").Response} res 
      */
     onBet(req, res) {
+
         let userID = req.params["userID"];
+        this.bot.logger.debug(`Posting to u/${userID}`);
+
         this.bot.setHandle(userID, req, res);
     }
 

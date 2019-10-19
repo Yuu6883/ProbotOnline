@@ -98,13 +98,13 @@ module.exports = class BotServer {
             return res.sendStatus(404);
         } else {
             conn.handle = { req, res };
-            conn.sendBody(req.body);
+            conn.sendBody(req.body.state);
 
             // Rip
             setTimeout(() => {
                 if (!res.headersSent) {
                     // Timeout code
-                    res.sendStatus(408);
+                    res.json({ bet: 0, leave: false });
                     conn.informTimeout();
                 }
             }, this.config.WS.betTimeout);

@@ -1,3 +1,5 @@
+const { EventEmitter } = require("events");
+
 const BET_OP_CODE  = 1;
 const LOG_OP_CODE  = 2;
 const DATA_OP_CODE = 3;
@@ -5,11 +7,14 @@ const LATE_OP_CODE    = 253;
 const TIMEOUT_OP_CODE = 254;
 const NO_GAME_OP_CODE = 255;
 
-module.exports = class BotSocket {
+module.exports = class BotSocket extends EventEmitter {
 
     constructor() {
+        super();
+
         /** @type {WebSocket} */
         this.socket = null;
+        this.history = [];
     }
 
     /** @param {string} url */
@@ -38,7 +43,7 @@ module.exports = class BotSocket {
 
     initEvents() {
         this.socket.onopen = () => {
-            console.log("Socket open");
+            console.log("Connected to gateway server");
         };
 
         this.socket.onmessage = message => {
@@ -68,7 +73,10 @@ module.exports = class BotSocket {
                 case DATA_OP_CODE:
                     let string = this.readUTF8(view, 1);
                     let data = JSON.parse(string);
-                    console.log("Received game data:", data);
+                    this.data = data;
+                    this.history.push(data);
+                    this.emit("data");
+                    console.debug("Received Game State:", data);
                     break;
 
                 default: 
@@ -77,7 +85,7 @@ module.exports = class BotSocket {
         };
 
         this.socket.onclose = () => {
-            console.log("Socket closed");
+            console.log("Disconnected from gateway server");
             this.disconnect();
         }
 
@@ -107,6 +115,10 @@ module.exports = class BotSocket {
     sendBet(bet) {
         let buffer = new ArrayBuffer(1 + 4);
         let view = new DataView(buffer);
+
+        if (bet < 0) {
+            bet = 0xFFFFFFFF;
+        }
 
         view.setUint8(0, BET_OP_CODE);
         view.setUint32(1, bet);
