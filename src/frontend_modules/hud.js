@@ -144,7 +144,7 @@ const history = getHistory();
 
 /* console.log, console.warn, console.error will
    write to Console panel on the right */
-console.log("Game State: \n", JSON.stringify(state, null, 4));
+console.log("Game State: \\n", JSON.stringify(state, null, 4));
 console.warn(\`History Length: \${history.length}\`);
 
 const players = state.players;
