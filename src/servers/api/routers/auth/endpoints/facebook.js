@@ -47,6 +47,9 @@ module.exports = {
         userInfo.type = "facebook";
         userInfo.uid = user.UserID;
         
+        if (!userInfo.uid)
+            return void res.clearCookie(cookieName).sendStatus(500);
+        
         res.cookie(this.config.API.JWTCookieName, 
             JWT.sign(userInfo, this.config.API.JWTSecret), { maxAge: this.config.API.CookieAge });
 

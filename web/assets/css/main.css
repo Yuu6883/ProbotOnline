@@ -34,6 +34,14 @@ a.uk-button:hover {
     background-color: #7289DA;
 }
 
+.git {
+    color: rgba(219, 69, 55, 0.75);
+}
+
+.git:hover {
+    color: rgb(219, 69, 55);
+}
+
 .google-theme {
     background-color: #DB4437;
 }
