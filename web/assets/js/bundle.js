@@ -1620,7 +1620,7 @@ module.exports = new class HUD {
         this.editor.setTheme("ace/theme/monokai");
         this.editor.setFontSize(24);
         this.editor.setReadOnly(true);
-        this.editor.setValue(localStorage.code || "");
+        this.editor.setValue(localStorage.code || StarterCode);
 
         $(document).bind('keydown', e => {
             if(e.ctrlKey && (e.which == 83)) {
@@ -1662,7 +1662,7 @@ module.exports = new class HUD {
 
         const b = t => `<strong>[<span class="${t}">${t.toUpperCase()}</span>]</strong> `;
 
-        const { log, warn, error } = console;
+        const { log, warn, error, clear } = console;
 
         const fakeConsole = {
             log: (...args) => {
@@ -1676,7 +1676,8 @@ module.exports = new class HUD {
             error: (...args) => {
                 consoleElem.append(b("error"));
                 append(...args);
-            }
+            },
+            clear: () => consoleElem.html("")
         }
 
         this.console = fakeConsole;
@@ -1712,7 +1713,7 @@ module.exports = new class HUD {
     
     saveCode() {
         UIkit.notification({message: 'Code Saved', status: 'success', timeout: 3000 });
-        localStorage.code = this.editor.getValue();
+        localStorage.code = (this.editor.getValue() || "").trim();
     }
 
     showLoginPanel() {
@@ -1725,6 +1726,57 @@ module.exports = new class HUD {
         $("#user-pfp").attr("src", API.avatarURL);
     }
 }
+
+const StarterCode = "" +
+`/* getState and getHistory is provided */
+const state = getState();
+const history = getHistory();
+
+/* console.log, console.warn, console.error will
+   write to Console panel on the right */
+console.log("Game State: ", state);
+console.warn(\`History Length: \${history.length}\`);
+
+const players = state.players;
+const me   = players[state.me];
+
+const myCards = me.cards;
+
+/* cardsToString is another useful method for debugging */
+console.log("My cards: ", cardsToString(myCards));
+
+let myBet = 0;
+
+/* A simple algorithm */
+let totalRank = 0;
+
+/* rankToNumber: J->11,...,A->14, others remain same */
+totalRank += rankToNumber(myCards[0].rank);
+totalRank += rankToNumber(myCards[1].rank);
+
+/* mra for Minium Raise Amount */
+let mra = state.minimumRaiseAmount;
+
+if (rank >= 24 && me.chips >= mra * 2)
+    myBet = mra * 2;
+  else if (rank >= 20 && me.chips >= mra * 1.5)
+    myBet = mra * 1.5;
+  else if (rank >= 16 && me.chips >= mra)
+    myBet = mra;
+    
+/* Set bet amount to negative to leave */
+if (me.chips >= me.buyIn * 1.5) 
+    bet = -1;
+else if (me.chips <= me.buyIn * 0.5)
+    bet = -1;
+    
+/* Log the result */
+console.log(myBet > 0 ? 
+    \`Betting \${myBet} chips\` : "Leaving");
+    
+/* call function bet to send data back to server */
+bet(myBet);
+`;
 },{"./api":7,"util":5}],9:[function(require,module,exports){
 const API = require("./api");
 const HUD = require("./hud");
@@ -1759,6 +1811,22 @@ $(window).on("load", () => {
 },{"./api":7,"./hud":8,"./runner":10,"./ws":11}],10:[function(require,module,exports){
 const VM = require("vm");
 
+const x = {"J":11,"Q":12,"K":13,"A":14};
+const rankToNumber = rank => {
+    if (isNaN(rank)) return x[rank.toUpperCase()];
+    return ~~rank;
+}
+
+const s = {"C":"♣","D":"♦","H":"♥","S":"♠"};
+
+/**
+ * @param  {{rank: string, type: "D"|"S"|"H"|"C"}[]} cards
+ */
+const cardsToString = (...cards) => {
+    if (Array.isArray(cards[0])) return logCard(...cards[0]);
+    return cards.map(card => `${s[card.type]}${card.rank}`).join("|") || "Empty";
+}
+
 module.exports = class Runner {
 
     /** 
@@ -1772,6 +1840,7 @@ module.exports = class Runner {
                 bet: socket.sendBet.bind(socket),
                 getState: () => socket.data,
                 getHistory: () => socket.history,
+                rankToNumber, cardsToString,
                 console: console
             }, {
                 timeout: 5000,
