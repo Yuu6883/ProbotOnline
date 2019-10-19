@@ -50,7 +50,7 @@ module.exports = new class HUD {
 
         const append = (...args) => {
             for (let arg of args) {
-                log(arg);
+                // log(arg);
                 if (typeof arg === "object") {
                     if (arg.message && arg.stack) {
                         consoleElem.append(arg.message);
