@@ -1662,6 +1662,8 @@ module.exports = new class HUD {
             while (consoleElem.children.length > 200) {
                 consoleElem.children().eq(0).remove();
             }
+
+            consoleElem.scrollTop(consoleElem.height());
         };
 
         const b = t => `<strong>[<span class="${t}">${t.toUpperCase()}</span>]</strong> `;
