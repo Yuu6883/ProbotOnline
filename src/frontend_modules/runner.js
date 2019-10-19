@@ -35,6 +35,8 @@ module.exports = class Runner {
             filename: "probot.js"
         });
 
+        console.assert(context.bet, "bet is GONE");
+
         VM.runInNewContext(script, context);
     }
 }
