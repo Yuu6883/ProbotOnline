@@ -12,7 +12,7 @@ const s = {"C":"♣","D":"♦","H":"♥","S":"♠"};
  * @param  {{rank: string, type: "D"|"S"|"H"|"C"}[]} cards
  */
 const cardsToString = (...cards) => {
-    if (Array.isArray(cards[0])) return logCard(...cards[0]);
+    if (Array.isArray(cards[0])) return cardsToString(...cards[0]);
     return cards.map(card => `${s[card.type]}${card.rank}`).join("|") || "Empty";
 }
 
